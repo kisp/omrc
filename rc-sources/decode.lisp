@@ -438,7 +438,7 @@
 
    :initvals '('() 60 'poly 'yes)
    :indoc '("from engine" "bpm" "format" "yes/no")
-   :menuins ((2 (("poly-list" 'poly) ("voice-list" 'voice) ("simple" 'simple)))
+   :menuins '((2 (("poly-list" 'poly) ("voice-list" 'voice) ("simple" 'simple)))
              (3 (("yes" 'yes) ("no" 'no))))
    :doc "Decode the solution from the pmc (also works for Csolver).
 
@@ -497,7 +497,7 @@ adressera en ny MIDI kanal. Om inga taktarter existerar i lsningen anvnds
 
   :initvals '(0 60 'simple)
   :indoc '("voice nr" "bpm" "format")
-  :menuins ((2 (("simple" 'simple) ("voices" 'voice) ("poly" 'poly))))
+  :menuins '((2 (("simple" 'simple) ("voices" 'voice) ("poly" 'poly))))
   :doc "View all predefined layers in one voice.
 
 <voice> is the number for the voice to be viewed.
@@ -542,7 +542,7 @@ en ny MIDI kanal. Om inga taktarter existerar i lsningen anvnds 4//4-takt.
 
    :initvals '(0 1 60 'simple)
    :indoc '("voicenr" "layernr" "bpm" "format")
-   :menuins ((3 (("simple" 'simple) ("voice" 'voice))))
+   :menuins '((3 (("simple" 'simple) ("voice" 'voice))))
    :doc "Decode one layer from the last found solution (pmc).
 
 <voice> is the voice number for the layer.
@@ -604,7 +604,7 @@ med alla notvrden eller taktartssignaturer). Vlj med hjlp at pop-up menyn.
 
    :initvals '(0 1 60 'simple)
    :indoc '("voicenr" "layernr" "tempo" "format")
-   :menuins ((3 (("simple" 'simple) ("voice" 'voice))))
+   :menuins '((3 (("simple" 'simple) ("voice" 'voice))))
    :doc "Decode one layer from the last found solution (Csolver).
 
 <voice> is the voice number for the layer.
@@ -752,7 +752,7 @@ Every new voice address next MIDI channel"
 
    :initvals '('() 60 'poly)
    :indoc '("from engine" "bpm" "format")
-   :menuins ((2 (("poly-list" 'poly) ("voice-list" 'voice) ("simple" 'simple))))
+   :menuins '((2 (("poly-list" 'poly) ("voice-list" 'voice) ("simple" 'simple))))
    :doc "Decode the solution from the pmc (also works for Csolver) excluding predefined layers.
 
 <sol> is the solution from pmc (or Csolver).

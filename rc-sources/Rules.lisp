@@ -1172,7 +1172,7 @@ Regeln mste kopplas till ingngen fr de bda skikten p \Òrules->pmc\Ó.
                                  &optional (mode 'include-pauses))
    :initvals '(1 2 'include-pauses)
    :indoc '("layernr" "layernr" "mode")
-   :menuins ((2 (("include-pauses" 'include-pauses) ("ignore-pauses" 'ignore-pauses) ("cell-starts" 'cell-starts))))
+   :menuins '((2 (("include-pauses" 'include-pauses) ("ignore-pauses" 'ignore-pauses) ("cell-starts" 'cell-starts))))
    :doc "Rule for making a hierarchical connection between two layers in a voice.
 
 <layerhigh> is the layer number for the higher layer in the hierarchy.
@@ -1231,7 +1231,7 @@ samtidigt som hndelserna i det hgre skiktet).
                                   &optional (mode 'include-pauses))
    :initvals '(1 0 1 1 'include-pauses)
    :indoc '("layernr" "voicenr" "layernr" "voicenr" "mode")
-   :menuins ((4 (("include-pauses" 'include-pauses) ("ignore-pauses" 'ignore-pauses) ("cell-starts" 'cell-starts))))
+   :menuins '((4 (("include-pauses" 'include-pauses) ("ignore-pauses" 'ignore-pauses) ("cell-starts" 'cell-starts))))
    :doc "Rule for making a hierarchical connection between two layers in different voices.
 
 <layerhigh> is the layer number for the higher layer in the hierarchy.

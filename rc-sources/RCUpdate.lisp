@@ -278,7 +278,7 @@ Regeln mste kopplas till ingngen fr de bda skikten p Òrules->pmcÓ.
                                          &optional (special-case 'no-empty-m))
    :initvals '(1 '(0) 'no-empty-m)
    :indoc '("rhythmlayer" "notevalues" "empty-measures?")
-   :menuins ((2 (("no-empty-measures" 'no-empty-m) ("empty-measures" 'empty-m))))
+   :menuins '((2 (("no-empty-measures" 'no-empty-m) ("empty-measures" 'empty-m))))
    :doc "Rule for controlling the position of the first event  after a bar line, i.e. control
 of syncopations over bar lines.
 

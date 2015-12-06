@@ -501,7 +501,7 @@ att lsas till sin ursprungliga position.
 
    :initvals '(nil 'poly)
    :indoc '("stored-section" "format")
-   :menuins ((1 (("poly" 'poly) ("voices" 'voices) ("simple" 'simple))))
+   :menuins '((1 (("poly" 'poly) ("voices" 'voices) ("simple" 'simple))))
    :doc "Decode the box \Òstore-section\Ó or an instance of the class \Òstored-section\Ó to a score or to simple format.
 
 <section> should be connected to the box \Òstore-section\Ó or an

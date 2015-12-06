@@ -27,26 +27,29 @@
 
 (defvar *OM_RC-lib-files* nil)
 (setf *OM_RS-lib-files* '(
-                          "CL:UserLibrary;omrc 1.41;rc sources;Classes-and-vectors"
-                          "CL:UserLibrary;omrc 1.41;rc sources;simple->tree"
-                          "CL:UserLibrary;omrc 1.41;rc sources;tree->simple"
-                          "CL:UserLibrary;omrc 1.41;rc sources;Rules"
-                          "CL:UserLibrary;omrc 1.41;rc sources;Build-domains"
-                          "CL:UserLibrary;omrc 1.41;rc sources;decode"
-                          "CL:UserLibrary;omrc 1.41;rc sources;measure-rules"
-                          "CL:UserLibrary;omrc 1.41;rc sources;Access&lock-result"
-                          "CL:UserLibrary;omrc 1.41;rc sources;Tools-user-rules"
-                          "CL:UserLibrary;omrc 1.41;rc sources;Heuristic-rules"
-                          "CL:UserLibrary;omrc 1.41;rc sources;RCUpdate"
-                          "CL:UserLibrary;omrc 1.41;rc sources;markov-rule"
-                          "CL:UserLibrary;omrc 1.41;rc sources;Kvantisering"
+                          "CL:libraries;omrc;rc-sources;Classes-and-vectors.lisp"
+                          "CL:libraries;omrc;rc-sources;simple-tree.lisp"
+                          "CL:libraries;omrc;rc-sources;tree-simple.lisp"
+                          "CL:libraries;omrc;rc-sources;Rules.lisp"
+                          "CL:libraries;omrc;rc-sources;Build-domains.lisp"
+                          "CL:libraries;omrc;rc-sources;decode.lisp"
+                          "CL:libraries;omrc;rc-sources;measure-rules.lisp"
+                          "CL:libraries;omrc;rc-sources;Access-lock-result.lisp"
+                          "CL:libraries;omrc;rc-sources;Tools-user-rules.lisp"
+                          "CL:libraries;omrc;rc-sources;Heuristic-rules.lisp"
+                          "CL:libraries;omrc;rc-sources;RCUpdate.lisp"
+                          "CL:libraries;omrc;rc-sources;markov-rule.lisp"
+                          "CL:libraries;omrc;rc-sources;Kvantisering.lisp"
                           ))
+
+(dolist (file *OM_RS-lib-files*)
+  (assert (probe-file file)))
 
 ;--------------------------------------------------
 ;Loading files
 ;--------------------------------------------------
 
-(mapc #'ccl::compile&load *OM_RS-lib-files*)
+(mapc #'om::compile&load *OM_RS-lib-files*)
 
 
 ;--------------------------------------------------
