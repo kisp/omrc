@@ -1,1 +1,618 @@
-;****************************;Rhythm Constraints library version 1.0 by …rjan Sandred, IRCAM 1999;;Update version 1.3 19/8 2002 (Stockholm);;Updated function in this document:;  get-this-cell-from-svar, get-variable-in-this-layer-at-last-index, get-variable-in-this-layer-before-last-index, ;  get-variable-in-this-layer-two-before-last-index, get-all-variables-in-this-layer, get-all-variables-in-any-layer, ;  RC::get-cell-other-layer, RC::get-cell-any-layer, RC::get-rhythm-other-layer, RC::get-rhythm-any-layer, ;  RC::get-cell-at-time;(in-package RC)(defun get-this-cell-from-svar (x)      (if (typep x 'rhythmcell)        (get-rhythmcell x)        (get-timesign x)))(defun get-variable-in-this-layer-at-last-index (indexx x)  (let ((voice-nr (get-voice-nr x))        (layer-nr (get-layer-nr x)))      (if (typep x 'rhythmcell)        (om::om* (om::x->dx (get-one-rhythmcell voice-nr layer-nr (1- indexx)))                 (get-one-rhythmcells-pauses voice-nr layer-nr (1- indexx)))        (get-one-timesign voice-nr layer-nr (1- indexx)))))(defun get-variable-in-this-layer-before-last-index (indexx x)  (let ((voice-nr (get-voice-nr x))        (layer-nr (get-layer-nr x)))      (if (typep x 'rhythmcell)        (let ((abs-time-rhythm (get-rhythmcell-before-last-abs-time                                 voice-nr layer-nr (1- indexx))))          (if abs-time-rhythm            (om::om* (om::x->dx abs-time-rhythm)                     (get-rhythmcell-pausflags-before-last voice-nr layer-nr (1- indexx)))            nil))        (get-timesign-before-last voice-nr layer-nr (1- indexx)))))(defun get-variable-in-this-layer-two-before-last-index (indexx x)  (let ((voice-nr (get-voice-nr x))        (layer-nr (get-layer-nr x)))      (if (typep x 'rhythmcell)        (let ((abs-time-rhythm (get-rhythmcell-two-before-last-abs-time                                 voice-nr layer-nr (1- indexx))))          (if abs-time-rhythm            (om::om* (om::x->dx abs-time-rhythm)                     (get-rhythmcell-pausflags-two-before-last voice-nr layer-nr (1- indexx)))            nil))        (get-timesign-two-before-last voice-nr layer-nr (1- indexx)))))(defun get-all-variables-in-this-layer (indexx x)  (let ((voice-nr (get-voice-nr x))        (layer-nr (get-layer-nr x)))      (if (typep x 'rhythmcell)        (om::om* (get-all-rhythmcells-in-layer voice-nr layer-nr (1- indexx))                 (get-all-rhythmcell-pauseflags-in-layer voice-nr layer-nr (1- indexx)))        (get-one-measurelayer voice-nr layer-nr (1- indexx)))))(defun get-all-variables-in-any-layer (indexx voice-nr layer-nr)      (if (= layer-nr 0)        (get-one-measurelayer voice-nr layer-nr (1- indexx))        (om::om* (get-all-rhythmcells-in-layer voice-nr layer-nr (1- indexx))                 (get-all-rhythmcell-pauseflags-in-layer voice-nr layer-nr (1- indexx)))));*********************;om function(om::defmethod! RC::get-this-cell ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Get the content of the current instantiated variable (i.e. the current rhythm cell or time signature).<x> is the current variable. It should be connected to the second input inside a user rule patch.--------------------------HŠmta innehŒllet i den aktuella instancierade variabeln (d.v.s. den aktuella rytmcellen eller taktartssignaturen). <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-this-cell-from-svar x)   )(om::defmethod! RC::get-last-cell ((indexx integer)                                    (x t))   :initvals '(nil nil)   :indoc '("index" "search-var")   :doc "Get the content of the instantiated variable in the same layer as the current one, but before the current one.Get the content of the instantiated variable in the same layer as the current one, but before the current one (i.e. a rhythm cell or time signature). <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.--------------------------HŠmta innehŒllet i den instancierade variabeln i samma skikt som den aktuella instancierade variabeln, men fšre denna (d.v.s. en rytmcell eller taktartssignatur). <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-variable-in-this-layer-at-last-index indexx x)   )(om::defmethod! RC::get-cell-before-last ((indexx integer)                                           (x t))   :initvals '(nil nil)   :indoc '("index" "search-var")   :doc "Get the content of the instantiated variable in the same layer as the current one, but two before the current one.Get the content of the instantiated variable in the same layer as the current one, but two before the current one (i.e. a rhythm cell or time signature). <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.--------------------------HŠmta innehŒllet i den instancierade variabeln i samma skikt som den aktuella instancierade variabeln, men tvŒ fšre denna (d.v.s. en rytmcell eller taktartssignatur). <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-variable-in-this-layer-before-last-index indexx x)   )(om::defmethod! RC::get-cell-two-before-last ((indexx integer)                                               (x t))   :initvals '(nil nil)   :indoc '("index" "search-var")   :doc "Get the content of the instantiated variable in the same layer as the current one, but three before the current one.Get the content of the instantiated variable in the same layer as the current one, but three before the current one (i.e. a rhythm cell or time signature). <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.--------------------------HŠmta innehŒllet i den instancierade variabeln i samma skikt som den aktuella instancierade variabeln, men tre fšre denna (d.v.s. en rytmcell eller taktartssignatur). <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-variable-in-this-layer-two-before-last-index indexx x)   )(om::defmethod! RC::get-all-cells ((indexx integer)                                    (x t))   :initvals '(nil nil)   :indoc '("index" "search-var")   :doc "Get the content of all instantiated variable in the same layer as the current one(i.e. a list of all rhythm cells or time signatures). The current instantiated variable is not included. <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.--------------------------HŠmta innehŒllet av alla instancierade variabler i samma skikt som den aktuella instancierade variabeln (d.v.s. en lista med alla rytmceller eller taktartssignaturer). Den aktuella instacierade variabeln Šr inte inklurderad. <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-all-variables-in-this-layer indexx x)   )(om::defmethod! RC::pause? ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Gives true if the current instaciated variable is a rhythm cell, and if the cell contains longer total duration of pauses than notes.<x> is the current variable. It should be connected to the second input inside a user rule patch.--------------------------Ger sannt om den aktuella instancierade variabeln Šr en rytmcell, och om dess lŠngd till stšrsta delen bestŒr av paus.<x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (and (typep x 'rhythmcell)        (< (apply '+ (get-rhythmcell x))           0)))(om::defmethod! RC::rhythmcell? ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Gives true if the current instaciated variable is a rhythm cell.<x> is the current variable. It should be connected to the second input inside a user rule patch.--------------------------Ger sannt om den aktuella instancierade variabeln Šr en rytmcell.<x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (typep x 'rhythmcell)   )(om::defmethod! RC::timesign? ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Gives true if the current instaciated variable is a time signature.<x> is the current variable. It should be connected to the second input inside a user rule patch.--------------------------Ger sannt om den aktuella instancierade variabeln Šr en taktart.<x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (typep x 'timesign)   )(om::defmethod! RC::get-layernumber ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Get the layer number for the current instantiated variable.<x> is the current variable. It should be connected to the second input inside a user rule patch.--------------------------HŠmta numret fšr skiktet fšr den aktuella instancierade variabeln.<x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-layer-nr x)   )(om::defmethod! RC::get-this-cell-dur ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Get the length of the current instantiated variable (i.e. the length of the current rhythm cell or measure).<x> is the current variable. It should be connected to the second input inside a user rule patch.--------------------------HŠmta lŠngden fšr den aktuella instancierade variabeln (d.v.s. lŠngden fšr den aktuella rytmcellen eller takten).<x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-variabledur x)   )(om::defmethod! RC::test-equal ((ev1 t) (ev2 t))   :initvals '(nil nil)   :indoc '("event" "event")   :doc "Gives true if two cells (rhythm cells or time signatures,also numbers or lists) are identical.<ev1> is one of the events to compare.<ev2> is the other.--------------------------Ger sannt om tvŒ celler (rytmceller eller taktartssignaturer,Šven siffror eller listor) Šr identiska.<ev1> Šr en av hŠndelserna att jŠmfšra.<ev2> Šr den andra."   :icon 380      (equal ev1 ev2)   )(om::defmethod! RC::test-not-equal ((ev1 t) (ev2 t))   :initvals '(nil nil)   :indoc '("event" "event")   :doc "Gives true if two cells (rhythm cells or time signatures,also numbers or lists) are different from each other.<ev1> is one of the events to compare.<ev2> is the other.--------------------------Ger sannt om tvŒ celler (rytmceller eller taktartssignaturer,Šven siffror eller listor) Šr olika.<ev1> Šr en av hŠndelserna att jŠmfšra.<ev2> Šr den andra."   :icon 381      (not (equal ev1 ev2))   )(om::defmethod! RC::get-time ((indexx integer)                              (x t))   :initvals '(nil nil)   :indoc '("index" "search-var")   :doc "Get the start time for the current instantiated variable.The time will be given as a ratio, equivalent to the total note duration from the start of the sequence.<x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.--------------------------HŠmta starttiden fšr den aktuella instancierade variabeln.Tiden ges som ett brŒk, motsvarande det totala notlŠngdsvŠrdet frŒn sekvensens start.<x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel."   :icon 367      (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx))   );stop time because start time is wrong on last index(om::defmethod! RC::get-cell-other-layer ((indexx integer)                                          (x t)                                          (layer integer))   :initvals '(nil nil nil)   :indoc '("index" "search-var" "nr")   :doc "Get the content of the instantiated variable in another layer, but in the same voice, as the current instantiated variable, that exist at the starting point for the current instantiated variable.Get the content of the instantiated variable in another layer, but in the same voice, as the current instantiated variable, that exist at the starting point for the current instantiated variable (i.e. a rhythm cell or a time signature). If no variable is instantiated yet, nil will be returned. <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.<layer> is the layer number for the layer where the variable exist.--------------------------HŠmta innehŒllet i den instancierade variabeln i ett annat skikt men i samma stŠmma som den aktuella instancierade variabeln, som finns pŒ den aktuella instancierade variabelns starttid (d.v.s. en rytmcell eller taktartssignatur). <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<layer> Šr numret fšr det skikt dŠr variabeln finns."   :icon 367      (let ((timepoint (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx))))     (if (= layer 0)       (get-timesign-at-timepoint (get-voice-nr x) layer timepoint (1- indexx))       (om::om* (om::x->dx (get-rhythmcell-at-timepoint (get-voice-nr x) layer timepoint (1- indexx)))                (get-rhythmcells-pauses-at-timepoint (get-voice-nr x) layer timepoint (1- indexx))))     ))(om::defmethod! RC::get-cell-any-layer ((indexx integer)                                        (x t)                                        (layer integer)                                        (voice integer))   :initvals '(nil nil nil nil)   :indoc '("index" "search-var" "nr" "nr")   :doc "Get the content of an instantiated variable in any layer and voice that exist at the starting point for the current instantiated variable.Get the content of an instantiated variable in any layer and voice that exists at the starting point for the current instantiated variable (i.e. a rhythm cell or a time signature). If no variable is instantiated yet, nil will be returned. <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.<layer> is the layer number for the layer where the variable exist.<voice> is the voice number for the voice where the variable exist.--------------------------HŠmta innehŒllet i den instancierade variabeln i vilket skikt och vilken stŠmma som helst som finns pŒ den aktuella instancierade variabelns starttid (d.v.s. en rytmcell eller taktartssignatur). <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<layer> Šr numret fšr det skikt dŠr variabeln finns.<voice> Šr numret fšr det stŠmma dŠr variabeln finns."   :icon 367      (let ((timepoint (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx))))     (if (= layer 0)       (get-timesign-at-timepoint voice layer timepoint (1- indexx))       (om::om* (om::x->dx (get-rhythmcell-at-timepoint voice layer timepoint (1- indexx)))                (get-rhythmcells-pauses-at-timepoint voice layer timepoint (1- indexx)))))   )(om::defmethod! RC::get-rhythm-other-layer ((indexx integer)                                            (x t)                                            (layer integer))  :initvals '(nil nil nil)  :indoc '("index" "search-var" "nr")  :doc "Get the rhythm in another layer, but in the same voice, as the current instantiated variable, that occur within the timeframe for the current instanced variable.Get the rhythm in another layer, but in the same voice, as the current instantiated variable, that occur within the timeframe for the current instanced variable. This is not similar to a rhythm cell, since parts of one or several cells might occur within the timeframe. If no rhythm exist yet, nil will be returned. <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.<layer> is the layer number for the layer where the rhythm is.--------------------------HŠmta rytmen i ett annat skikt men i samma stŠmma som den aktuella instancierade variabeln, som fšrekommer under den aktuella instancierade variabelns tidsrymd. Detta Šr inte samma sak som en rytmcell, eftersom delar av en eller flera celler kan fšrekomma inom tidsrymden. Om ingen rytm finns Šnnu returneras nil. <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<layer> Šr numret fšr det skikt dŠr rytmen finns."  :icon 367    (let* ((starttime (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx)))         (endtime (+ starttime (get-variabledur x))))    (if (= layer 0)      nil      (om::om* (om::x->dx (get-rhythm-within-timepoints (get-voice-nr x) layer (1- indexx) starttime endtime))               (get-pauseflags-within-timepoints (get-voice-nr x) layer (1- indexx) starttime endtime)))))(om::defmethod! RC::get-rhythm-any-layer ((indexx integer)                                          (x t)                                                                                   (layer integer)                                          (voice integer))  :initvals '(nil nil nil nil)  :indoc '("index" "search-var" "nr" "nr")  :doc "Get a rhythm that occurs within the timeframe for the current instanced variable in any layer and voice.  This is not similar to a rhythm cell, since parts of one or several cells might occur within the timeframe. If no rhythm exist yet, nil will be returned. <x> is the current variable. It should be connected to the second input inside a user rule patch.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.<layer> is the layer number for the layer where the rhythm is.<voice> is the voice number for the voice where the rhythm is.--------------------------HŠmta en rytm som fšrekommer under den aktuella instancierade variabelns tidsrymd i vilket skikt och vilken stŠmma som helst. Detta Šr inte samma sak som en rytmcell, eftersom delar av en eller flera celler kan fšrekomma inom tidsrymden. Om ingen rytm finns Šnnu returneras nil. <x> Šr den aktuella variabeln. Den ska ansutas till den andra ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<layer> Šr numret fšr det skikt dŠr rytmen finns.<voice> Šr numret fšr det stŠmma dŠr rytmen finns."  :icon 367    (let* ((starttime (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx)))         (endtime (+ starttime (get-variabledur x))))    (if (= layer 0)      nil      (om::om* (om::x->dx (get-rhythm-within-timepoints voice layer (1- indexx) starttime endtime))               (get-pauseflags-within-timepoints voice layer (1- indexx) starttime endtime)))))(om::defmethod! RC::get-all-cells-any-layer ((indexx integer)                                                                          (layer integer)                                             (voice integer))  :initvals '(nil nil nil)  :indoc '("index" "nr" "nr")  :doc "Get the content of all instantiated variables in any layer and voice.NO DIFFERENCE WILL BE MADE BETWEEN PAUSES AND NOTES IN RHYTHM CELLS.<indexx> is the index for the current variable (index is used internal by the search engine). It should be connected to the first input inside a user rule patch.<layer> is the layer number for the layer.<voice> is the voice number for the voice where the layer is.--------------------------HŠmta innehŒllet i alla instancierade variabler i vilket skikt och vilken stŠmma som helst. INGEN SKILLNAD G…RS MELLAN PAUSER OCH NOTER I RYTMCELLER.<indexx> Šr index fšr den aktuella variabeln (index anvŠnds internt av sškmotorn). Den ska ansutas till den fšrsta ingŒngen inuti en patch fšr en anvŠndardefinierad regel.<layer> Šr numret fšr skiktet.<voice> Šr numret fšr det stŠmma dŠr skiktet finns."  :icon 367    (get-all-variables-in-any-layer indexx voice layer))(om::defmethod! RC::get-cell-at-time ((indexx integer)                                      (timepoint number)                                      (layer integer)                                      (voice integer))   :initvals '(nil 0 nil nil)   :indoc '("index" "time" "nr" "nr")   :doc "Tool to get a cell in any voice/layer at a given timepoint."   :icon 367      (if (< timepoint 0)     nil     (if (= layer 0)       (get-timesign-at-timepoint voice layer timepoint (1- indexx))       (om::om* (om::x->dx (get-rhythmcell-at-timepoint voice layer timepoint (1- indexx)))                (get-rhythmcells-pauses-at-timepoint voice layer timepoint (1- indexx)))))   );***********bakat kompatibilitet(om::defmethod! RC::get-cell-duration ((x t))   :initvals '(nil)   :indoc '("search-var")   :doc "Tool to get a what layer a searchvariable is a member of."   :icon 367      (get-variabledur x)   )
+;****************************
+;Rhythm Constraints library version 1.0 by Â…rjan Sandred, IRCAM 1999
+;
+;Update version 1.3 19/8 2002 (Stockholm)
+;
+;Updated function in this document:
+;  get-this-cell-from-svar, get-variable-in-this-layer-at-last-index, get-variable-in-this-layer-before-last-index,
+;  get-variable-in-this-layer-two-before-last-index, get-all-variables-in-this-layer, get-all-variables-in-any-layer,
+;  RC::get-cell-other-layer, RC::get-cell-any-layer, RC::get-rhythm-other-layer, RC::get-rhythm-any-layer,
+;  RC::get-cell-at-time
+;
+
+(in-package RC)
+
+(defun get-this-cell-from-svar (x)
+      (if (typep x 'rhythmcell)
+        (get-rhythmcell x)
+        (get-timesign x)))
+
+(defun get-variable-in-this-layer-at-last-index (indexx x)
+  (let ((voice-nr (get-voice-nr x))
+        (layer-nr (get-layer-nr x)))
+      (if (typep x 'rhythmcell)
+        (om::om* (om::x->dx (get-one-rhythmcell voice-nr layer-nr (1- indexx)))
+                 (get-one-rhythmcells-pauses voice-nr layer-nr (1- indexx)))
+        (get-one-timesign voice-nr layer-nr (1- indexx)))))
+
+
+(defun get-variable-in-this-layer-before-last-index (indexx x)
+  (let ((voice-nr (get-voice-nr x))
+        (layer-nr (get-layer-nr x)))
+      (if (typep x 'rhythmcell)
+        (let ((abs-time-rhythm (get-rhythmcell-before-last-abs-time
+                                voice-nr layer-nr (1- indexx))))
+          (if abs-time-rhythm
+            (om::om* (om::x->dx abs-time-rhythm)
+                     (get-rhythmcell-pausflags-before-last voice-nr layer-nr (1- indexx)))
+            nil))
+        (get-timesign-before-last voice-nr layer-nr (1- indexx)))))
+
+
+
+(defun get-variable-in-this-layer-two-before-last-index (indexx x)
+  (let ((voice-nr (get-voice-nr x))
+        (layer-nr (get-layer-nr x)))
+      (if (typep x 'rhythmcell)
+        (let ((abs-time-rhythm (get-rhythmcell-two-before-last-abs-time
+                                voice-nr layer-nr (1- indexx))))
+          (if abs-time-rhythm
+            (om::om* (om::x->dx abs-time-rhythm)
+                     (get-rhythmcell-pausflags-two-before-last voice-nr layer-nr (1- indexx)))
+            nil))
+        (get-timesign-two-before-last voice-nr layer-nr (1- indexx)))))
+
+
+(defun get-all-variables-in-this-layer (indexx x)
+  (let ((voice-nr (get-voice-nr x))
+        (layer-nr (get-layer-nr x)))
+
+      (if (typep x 'rhythmcell)
+        (om::om* (get-all-rhythmcells-in-layer voice-nr layer-nr (1- indexx))
+                 (get-all-rhythmcell-pauseflags-in-layer voice-nr layer-nr (1- indexx)))
+        (get-one-measurelayer voice-nr layer-nr (1- indexx)))))
+
+(defun get-all-variables-in-any-layer (indexx voice-nr layer-nr)
+
+      (if (= layer-nr 0)
+        (get-one-measurelayer voice-nr layer-nr (1- indexx))
+        (om::om* (get-all-rhythmcells-in-layer voice-nr layer-nr (1- indexx))
+                 (get-all-rhythmcell-pauseflags-in-layer voice-nr layer-nr (1- indexx)))))
+
+
+
+;*********************
+;om function
+(om::defmethod! RC::get-this-cell ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Get the content of the current instantiated variable
+(i.e. the current rhythm cell or time signature).
+
+<x> is the current variable. It should be connected to the second input
+inside a user rule patch.
+--------------------------
+HÂŠmta innehÂŒllet i den aktuella instancierade variabeln (d.v.s. den
+aktuella rytmcellen eller taktartssignaturen).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-this-cell-from-svar x)
+   )
+
+
+(om::defmethod! RC::get-last-cell ((indexx integer)
+                                   (x t))
+   :initvals '(nil nil)
+   :indoc '("index" "search-var")
+   :doc "Get the content of the instantiated variable in the same layer as the current one, but before the current one.
+
+Get the content of the instantiated variable in the same layer as
+the current one, but before the current one (i.e. a rhythm cell or
+time signature).
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+--------------------------
+HÂŠmta innehÂŒllet i den instancierade variabeln i samma skikt som den
+aktuella instancierade variabeln, men fÂšre denna (d.v.s. en rytmcell
+eller taktartssignatur).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-variable-in-this-layer-at-last-index indexx x)
+   )
+
+
+(om::defmethod! RC::get-cell-before-last ((indexx integer)
+                                          (x t))
+   :initvals '(nil nil)
+   :indoc '("index" "search-var")
+   :doc "Get the content of the instantiated variable in the same layer as the current one, but two before the current one.
+
+Get the content of the instantiated variable in the same layer as the
+current one, but two before the current one (i.e. a rhythm cell or
+time signature).
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+--------------------------
+HÂŠmta innehÂŒllet i den instancierade variabeln i samma skikt som den
+aktuella instancierade variabeln, men tvÂŒ fÂšre denna (d.v.s. en rytmcell
+eller taktartssignatur).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-variable-in-this-layer-before-last-index indexx x)
+   )
+
+
+(om::defmethod! RC::get-cell-two-before-last ((indexx integer)
+                                              (x t))
+   :initvals '(nil nil)
+   :indoc '("index" "search-var")
+   :doc "Get the content of the instantiated variable in the same layer as the current one, but three before the current one.
+
+Get the content of the instantiated variable in the same layer as the
+current one, but three before the current one (i.e. a rhythm cell or
+time signature).
+
+<x> is the current variable. It should be connected to the second input
+inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+--------------------------
+HÂŠmta innehÂŒllet i den instancierade variabeln i samma skikt som den
+aktuella instancierade variabeln, men tre fÂšre denna (d.v.s. en rytmcell
+eller taktartssignatur).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-variable-in-this-layer-two-before-last-index indexx x)
+   )
+
+
+(om::defmethod! RC::get-all-cells ((indexx integer)
+                                   (x t))
+   :initvals '(nil nil)
+   :indoc '("index" "search-var")
+   :doc "Get the content of all instantiated variable in the same layer as the current one
+(i.e. a list of all rhythm cells or time signatures). The current instantiated
+variable is not included.
+
+<x> is the current variable. It should be connected to the second input
+inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+--------------------------
+HÂŠmta innehÂŒllet av alla instancierade variabler i samma skikt som den
+aktuella instancierade variabeln (d.v.s. en lista med alla rytmceller
+eller taktartssignaturer). Den aktuella instacierade variabeln ÂŠr inte
+inklurderad.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-all-variables-in-this-layer indexx x)
+   )
+
+
+(om::defmethod! RC::pause? ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Gives true if the current instaciated variable is a rhythm cell, and if the
+cell contains longer total duration of pauses than notes.
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+--------------------------
+Ger sannt om den aktuella instancierade variabeln ÂŠr en rytmcell, och om dess lÂŠngd till
+stÂšrsta delen bestÂŒr av paus.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (and (typep x 'rhythmcell)
+        (< (apply '+ (get-rhythmcell x))
+           0)))
+
+
+(om::defmethod! RC::rhythmcell? ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Gives true if the current instaciated variable is a rhythm cell.
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+--------------------------
+Ger sannt om den aktuella instancierade variabeln ÂŠr en rytmcell.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (typep x 'rhythmcell)
+   )
+
+
+(om::defmethod! RC::timesign? ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Gives true if the current instaciated variable is a time signature.
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+--------------------------
+Ger sannt om den aktuella instancierade variabeln ÂŠr en taktart.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (typep x 'timesign)
+   )
+
+
+(om::defmethod! RC::get-layernumber ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Get the layer number for the current instantiated variable.
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+--------------------------
+HÂŠmta numret fÂšr skiktet fÂšr den aktuella instancierade variabeln.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-layer-nr x)
+   )
+
+
+(om::defmethod! RC::get-this-cell-dur ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Get the length of the current instantiated variable
+(i.e. the length of the current rhythm cell or measure).
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+--------------------------
+HÂŠmta lÂŠngden fÂšr den aktuella instancierade variabeln (d.v.s.
+lÂŠngden fÂšr den aktuella rytmcellen eller takten).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra
+ingÂŒngen inuti en patch fÂšr en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-variabledur x)
+   )
+
+
+(om::defmethod! RC::test-equal ((ev1 t) (ev2 t))
+   :initvals '(nil nil)
+   :indoc '("event" "event")
+   :doc "Gives true if two cells (rhythm cells or time signatures,also numbers or lists) are identical.
+
+<ev1> is one of the events to compare.
+<ev2> is the other.
+--------------------------
+Ger sannt om tvÂŒ celler (rytmceller eller taktartssignaturer,ÂŠven siffror eller listor) ÂŠr identiska.
+
+<ev1> ÂŠr en av hÂŠndelserna att jÂŠmfÂšra.
+<ev2> ÂŠr den andra.
+"
+   :icon 380
+
+   (equal ev1 ev2)
+   )
+
+
+(om::defmethod! RC::test-not-equal ((ev1 t) (ev2 t))
+   :initvals '(nil nil)
+   :indoc '("event" "event")
+   :doc "Gives true if two cells (rhythm cells or time signatures,also numbers or lists) are different from each other.
+
+<ev1> is one of the events to compare.
+<ev2> is the other.
+--------------------------
+Ger sannt om tvÂŒ celler (rytmceller eller taktartssignaturer,ÂŠven siffror eller listor) ÂŠr olika.
+
+<ev1> ÂŠr en av hÂŠndelserna att jÂŠmfÂšra.
+<ev2> ÂŠr den andra.
+"
+   :icon 381
+
+   (not (equal ev1 ev2))
+   )
+
+
+(om::defmethod! RC::get-time ((indexx integer)
+                              (x t))
+   :initvals '(nil nil)
+   :indoc '("index" "search-var")
+   :doc "Get the start time for the current instantiated variable.
+The time will be given as a ratio, equivalent to the total note
+duration from the start of the sequence.
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+--------------------------
+HÂŠmta starttiden fÂšr den aktuella instancierade variabeln.
+Tiden ges som ett brÂŒk, motsvarande det totala notlÂŠngdsvÂŠrdet frÂŒn
+sekvensens start.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+"
+   :icon 367
+
+   (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx))
+   );stop time because start time is wrong on last index
+
+
+(om::defmethod! RC::get-cell-other-layer ((indexx integer)
+                                          (x t)
+                                          (layer integer))
+   :initvals '(nil nil nil)
+   :indoc '("index" "search-var" "nr")
+   :doc "Get the content of the instantiated variable in another layer, but in the same voice, as the current instantiated variable, that exist at the starting point for the current instantiated variable.
+
+Get the content of the instantiated variable in another layer,
+but in the same voice, as the current instantiated variable, that
+exist at the starting point for the current instantiated variable
+(i.e. a rhythm cell or a time signature). If no variable is
+instantiated yet, nil will be returned.
+
+<x> is the current variable. It should be connected to the second
+input inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input
+inside a user rule patch.
+<layer> is the layer number for the layer where the variable exist.
+--------------------------
+HÂŠmta innehÂŒllet i den instancierade variabeln i ett annat skikt men
+i samma stÂŠmma som den aktuella instancierade variabeln, som finns pÂŒ
+den aktuella instancierade variabelns starttid (d.v.s. en rytmcell
+eller taktartssignatur).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt
+av sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch
+fÂšr en anvÂŠndardefinierad regel.
+<layer> ÂŠr numret fÂšr det skikt dÂŠr variabeln finns.
+"
+   :icon 367
+
+   (let ((timepoint (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx))))
+     (if (= layer 0)
+       (get-timesign-at-timepoint (get-voice-nr x) layer timepoint (1- indexx))
+       (om::om* (om::x->dx (get-rhythmcell-at-timepoint (get-voice-nr x) layer timepoint (1- indexx)))
+                (get-rhythmcells-pauses-at-timepoint (get-voice-nr x) layer timepoint (1- indexx))))
+     ))
+
+
+(om::defmethod! RC::get-cell-any-layer ((indexx integer)
+                                        (x t)
+                                        (layer integer)
+                                        (voice integer))
+   :initvals '(nil nil nil nil)
+   :indoc '("index" "search-var" "nr" "nr")
+   :doc "Get the content of an instantiated variable in any layer and voice that exist at the starting point for the current instantiated variable.
+
+Get the content of an instantiated variable in any layer and
+voice that exists at the starting point for the current instantiated
+variable (i.e. a rhythm cell or a time signature). If no variable is
+instantiated yet, nil will be returned.
+
+<x> is the current variable. It should be connected to the
+second input inside a user rule patch.
+<indexx> is the index for the current variable (index is used
+internal by the search engine). It should be connected to the
+first input inside a user rule patch.
+<layer> is the layer number for the layer where the variable exist.
+<voice> is the voice number for the voice where the variable exist.
+--------------------------
+HÂŠmta innehÂŒllet i den instancierade variabeln i vilket skikt
+och vilken stÂŠmma som helst som finns pÂŒ den aktuella instancierade
+variabelns starttid (d.v.s. en rytmcell eller taktartssignatur).
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra
+ingÂŒngen inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds
+internt av sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<layer> ÂŠr numret fÂšr det skikt dÂŠr variabeln finns.
+<voice> ÂŠr numret fÂšr det stÂŠmma dÂŠr variabeln finns.
+"
+   :icon 367
+
+   (let ((timepoint (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx))))
+     (if (= layer 0)
+       (get-timesign-at-timepoint voice layer timepoint (1- indexx))
+       (om::om* (om::x->dx (get-rhythmcell-at-timepoint voice layer timepoint (1- indexx)))
+                (get-rhythmcells-pauses-at-timepoint voice layer timepoint (1- indexx)))))
+   )
+
+
+(om::defmethod! RC::get-rhythm-other-layer ((indexx integer)
+                                            (x t)
+                                            (layer integer))
+  :initvals '(nil nil nil)
+  :indoc '("index" "search-var" "nr")
+  :doc "Get the rhythm in another layer, but in the same voice, as the current instantiated variable, that occur within the timeframe for the current instanced variable.
+
+Get the rhythm in another layer, but in the same voice, as the current
+instantiated variable, that occur within the timeframe for the current
+instanced variable. This is not similar to a rhythm cell, since parts
+of one or several cells might occur within the timeframe. If no rhythm
+exist yet, nil will be returned.
+
+<x> is the current variable. It should be connected to the second input
+inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+<layer> is the layer number for the layer where the rhythm is.
+--------------------------
+HÂŠmta rytmen i ett annat skikt men i samma stÂŠmma som den aktuella
+instancierade variabeln, som fÂšrekommer under den aktuella instancierade
+variabelns tidsrymd. Detta ÂŠr inte samma sak som en rytmcell, eftersom
+delar av en eller flera celler kan fÂšrekomma inom tidsrymden. Om ingen
+rytm finns ÂŠnnu returneras nil.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+<layer> ÂŠr numret fÂšr det skikt dÂŠr rytmen finns.
+"
+  :icon 367
+
+  (let* ((starttime (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx)))
+         (endtime (+ starttime (get-variabledur x))))
+    (if (= layer 0)
+      nil
+      (om::om* (om::x->dx (get-rhythm-within-timepoints (get-voice-nr x) layer (1- indexx) starttime endtime))
+               (get-pauseflags-within-timepoints (get-voice-nr x) layer (1- indexx) starttime endtime)))))
+
+
+(om::defmethod! RC::get-rhythm-any-layer ((indexx integer)
+                                          (x t)
+                                          (layer integer)
+                                          (voice integer))
+  :initvals '(nil nil nil nil)
+  :indoc '("index" "search-var" "nr" "nr")
+  :doc "Get a rhythm that occurs within the timeframe for the current instanced variable in any layer and voice.
+This is not similar to a rhythm cell, since parts of one or several
+cells might occur within the timeframe. If no rhythm exist yet, nil
+will be returned.
+
+<x> is the current variable. It should be connected to the second input
+inside a user rule patch.
+<indexx> is the index for the current variable (index is used internal
+by the search engine). It should be connected to the first input inside
+a user rule patch.
+<layer> is the layer number for the layer where the rhythm is.
+<voice> is the voice number for the voice where the rhythm is.
+--------------------------
+HÂŠmta en rytm som fÂšrekommer under den aktuella instancierade variabelns
+tidsrymd i vilket skikt och vilken stÂŠmma som helst. Detta ÂŠr inte samma
+sak som en rytmcell, eftersom delar av en eller flera celler kan fÂšrekomma
+inom tidsrymden. Om ingen rytm finns ÂŠnnu returneras nil.
+
+<x> ÂŠr den aktuella variabeln. Den ska ansutas till den andra ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds internt av
+sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen inuti en patch fÂšr
+en anvÂŠndardefinierad regel.
+<layer> ÂŠr numret fÂšr det skikt dÂŠr rytmen finns.
+<voice> ÂŠr numret fÂšr det stÂŠmma dÂŠr rytmen finns.
+"
+  :icon 367
+
+  (let* ((starttime (get-stop-time (get-voice-nr x) (get-layer-nr x) (1- indexx)))
+         (endtime (+ starttime (get-variabledur x))))
+    (if (= layer 0)
+      nil
+      (om::om* (om::x->dx (get-rhythm-within-timepoints voice layer (1- indexx) starttime endtime))
+               (get-pauseflags-within-timepoints voice layer (1- indexx) starttime endtime)))))
+
+
+(om::defmethod! RC::get-all-cells-any-layer ((indexx integer)
+                                             (layer integer)
+                                             (voice integer))
+  :initvals '(nil nil nil)
+  :indoc '("index" "nr" "nr")
+  :doc "Get the content of all instantiated variables in any layer and voice.
+NO DIFFERENCE WILL BE MADE BETWEEN PAUSES AND NOTES IN
+RHYTHM CELLS.
+
+<indexx> is the index for the current variable (index is used
+internal by the search engine). It should be connected to the
+first input inside a user rule patch.
+<layer> is the layer number for the layer.
+<voice> is the voice number for the voice where the layer is.
+--------------------------
+HÂŠmta innehÂŒllet i alla instancierade variabler i vilket skikt
+och vilken stÂŠmma som helst. INGEN SKILLNAD GÂ…RS MELLAN
+PAUSER OCH NOTER I RYTMCELLER.
+
+<indexx> ÂŠr index fÂšr den aktuella variabeln (index anvÂŠnds
+internt av sÂškmotorn). Den ska ansutas till den fÂšrsta ingÂŒngen
+inuti en patch fÂšr en anvÂŠndardefinierad regel.
+<layer> ÂŠr numret fÂšr skiktet.
+<voice> ÂŠr numret fÂšr det stÂŠmma dÂŠr skiktet finns.
+"
+  :icon 367
+
+  (get-all-variables-in-any-layer indexx voice layer))
+
+
+
+(om::defmethod! RC::get-cell-at-time ((indexx integer)
+                                      (timepoint number)
+                                      (layer integer)
+                                      (voice integer))
+   :initvals '(nil 0 nil nil)
+   :indoc '("index" "time" "nr" "nr")
+   :doc "Tool to get a cell in any voice/layer at a given timepoint."
+   :icon 367
+
+   (if (< timepoint 0)
+     nil
+     (if (= layer 0)
+       (get-timesign-at-timepoint voice layer timepoint (1- indexx))
+       (om::om* (om::x->dx (get-rhythmcell-at-timepoint voice layer timepoint (1- indexx)))
+                (get-rhythmcells-pauses-at-timepoint voice layer timepoint (1- indexx)))))
+   )
+
+;***********bakat kompatibilitet
+(om::defmethod! RC::get-cell-duration ((x t))
+   :initvals '(nil)
+   :indoc '("search-var")
+   :doc "Tool to get a what layer a searchvariable is a member of."
+   :icon 367
+
+   (get-variabledur x)
+   )

@@ -1,3 +1,18 @@
+###  Translation from RTF performed by UnRTF, version 0.21.9 
+### font table contains 0 fonts total
+### invalid font number 0
+
+-----------------
+OMRC 1.41 January 2005
+Fixed bug in r-hierarchy
+
+OMRC 1.4 December 2004
+New function:
+r-markov
+r-quant
+hr-quant_dev
+hr-quant_ornaments
+
 OMRC 1.32
 Fixed bug in tree->simple
 
@@ -5,7 +20,9 @@ Fixed bug in tree->simple
 OMRC 1.31
 New function:
 pause? (will output true if a variable is a pause)
-make-rhythm-domain (create a rhythm domain with all durations between limits)
+make-rhythm-domain (create a rhythm domain with all durations bet### invalid font number 1
+ween limits)
+### invalid font number 0
 
 Updated functions:
 r-hierarcy, gr-hierarcy (now with the option ignore-pauses)
@@ -13,21 +30,21 @@ r-canon, gr-canon (now with the option to scale the duration in comes in realtio
 
 
 OMRC 1.3 19/08/02
-This update makes it possible to work with pauses in all rules/functions.
-A pause is indicated as a negativ duration. All user rule tools (and all other functions)
+This update makes it possible to work with pauses in all rules/functions. 
+A pause is indicated as a negativ duration. All user rule tools (and all other functions) 
 understands pauses.
 
-Only Pmc is supported in this update (not the Csolver). If you want to work with the Csolver (the
+Only Pmc is supported in this update (not the Csolver). If you want to work with the Csolver (the 
 Situation library), you have to use RC version 1.1. The csolver might work in this version if you do not use pauses.
 
 
 
-OMRC library 1.2 (July -02)
+OMRC library 1.2 (July -02) 
 A fast update at the PRISMA meeting in Paris. This includes pauses, but some serious bugs exist.
 
 
 
-OMRC library 1.1 (17/12/99)
+OMRC library 1.1 (17/12/99) 
 
 **************************************
 New functions in this update:
@@ -38,10 +55,10 @@ With this update there is a Tutorial section in the manual. All patches for the 
 **************************************
 The following limitations exist in the library:
 
--There can be maximum 800 search variables in a calculation.
--There can be maximum 2400 events in each rhythm layer (single events, not motifs).
--There can be maximum 8160 grid points handled by the r-beat-subdiv (this equals
-170 measures with the time signature 4/4 if the rule r-beat-subdiv allows the subdivisions
+"There can be maximum 800 search variables in a calculation.
+"There can be maximum 2400 events in each rhythm layer (single events, not motifs).
+"There can be maximum 8160 grid points handled by the r-beat-subdiv (this equals 
+170 measures with the time signature 4/4 if the rule r-beat-subdiv allows the subdivisions 
 '(1 2 3 4 5 6).
 
 This can easily be changed in the file "Classes-and-vectors.lisp": change the parameters *max-numberof-rhythmvalues*, *max-size-timesigngrid* and *max-numberof-variables*.
